@@ -1,18 +1,25 @@
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ChevronDown, Star, Award, Users, Briefcase, Shield, CheckCircle } from 'lucide-react'
+import { ArrowRight, ChevronDown, Star, Award, Users, Briefcase, Shield, CheckCircle, Phone, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { FIRM, PRACTICE_AREAS, TESTIMONIALS, FAQS } from '../data/content'
+import AnimatedCounter from '../components/AnimatedCounter'
+import PremiumButton from '../components/PremiumButton'
+import TrustBadges from '../components/TrustBadges'
 
-/* ── Trusted logos (text-based, realistic) ── */
-const TRUSTED = ['Tata Group','Reliance Industries','HDFC Bank','Infosys','Mahindra & Mahindra','Bajaj Finance','Adani Group','Wipro','L&T Group','Kotak Mahindra']
+/* ── Enhanced trusted logos with real Indian companies ── */
+const TRUSTED = [
+  'Tata Consultancy Services','Reliance Industries','HDFC Bank','Infosys Limited',
+  'Mahindra Group','Bajaj Finance','Adani Enterprises','Wipro Technologies',
+  'Larsen & Toubro','Kotak Mahindra Bank','Asian Paints','UltraTech Cement'
+]
 
-/* ── Trust signals ── */
+/* ── Premium trust signals with animated counters ── */
 const TRUST = [
-  { value: '25+', label: 'Years of Practice', icon: <Award size={22}/> },
-  { value: '2,400+', label: 'Cases Won', icon: <CheckCircle size={22}/> },
-  { value: '850+', label: 'Corporate Clients', icon: <Users size={22}/> },
-  { value: '₹1.2L Cr+', label: 'Deal Value Advised', icon: <Briefcase size={22}/> },
+  { value: 25, suffix: '+', label: 'Years of Excellence', icon: <Award size={24}/>, color: 'from-gold-500 to-gold-600' },
+  { value: 2400, suffix: '+', label: 'Cases Won', icon: <CheckCircle size={24}/>, color: 'from-green-500 to-green-600' },
+  { value: 850, suffix: '+', label: 'Corporate Clients', icon: <Users size={24}/>, color: 'from-blue-500 to-blue-600' },
+  { value: 120000, prefix: '₹', suffix: ' Cr+', label: 'Deal Value Advised', icon: <Briefcase size={24}/>, color: 'from-purple-500 to-purple-600' },
 ]
 
 /* ── Why choose us ── */
@@ -34,10 +41,45 @@ const AWARDS = [
 function FadeUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 1, delay, ease: [0.23, 1, 0.32, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function StaggerContainer({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.1
+          }
+        }
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function StaggerItem({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.23, 1, 0.32, 1] } }
+      }}
       className={className}
     >
       {children}
@@ -50,207 +92,308 @@ export default function Home() {
 
   return (
     <>
-      {/* ══ HERO — FIX: brighter image, stronger single CTA, trust stats ══ */}
+      {/* ══ PREMIUM HERO SECTION ══ */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* BG image — opacity raised from 0.12 → 0.28 for visibility */}
+        {/* Enhanced background with multiple layers */}
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1920&q=85"
-            alt=""
+            alt="Premium law office"
             className="w-full h-full object-cover"
-            style={{ opacity: 0.28 }}
+            style={{ opacity: 0.35 }}
           />
         </div>
-        {/* Overlay — lighter on right so image shows through */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(105deg, rgba(8,7,5,0.96) 40%, rgba(8,7,5,0.7) 70%, rgba(8,7,5,0.35) 100%)' }} />
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 60% 80% at 0% 50%, rgba(201,150,15,0.07) 0%, transparent 60%)' }} />
-        <div className="absolute bottom-0 inset-x-0 h-40" style={{ background: 'linear-gradient(to top, #080705, transparent)' }} />
-        <div className="absolute left-0 top-0 bottom-0 w-px" style={{ background: 'linear-gradient(180deg, transparent, rgba(201,150,15,0.5) 30%, rgba(201,150,15,0.5) 70%, transparent)' }} />
-
-        {/* Decorative ring */}
-        <div className="absolute right-[6%] top-1/2 -translate-y-1/2 w-[420px] h-[420px] hidden xl:block pointer-events-none">
-          <div className="animate-rotate-slow w-full h-full rounded-full" style={{ border: '1px solid rgba(201,150,15,0.1)' }} />
-          <div className="absolute inset-10 rounded-full" style={{ border: '1px solid rgba(201,150,15,0.07)' }} />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-gold-500 animate-pulse-gold" />
-          </div>
+        
+        {/* Premium gradient overlays */}
+        <div className="absolute inset-0" style={{ 
+          background: 'linear-gradient(105deg, rgba(8,7,5,0.95) 35%, rgba(8,7,5,0.8) 65%, rgba(8,7,5,0.4) 100%)' 
+        }} />
+        <div className="absolute inset-0" style={{ 
+          background: 'radial-gradient(ellipse 70% 80% at 0% 50%, rgba(201,150,15,0.12) 0%, transparent 70%)' 
+        }} />
+        <div className="absolute bottom-0 inset-x-0 h-48" style={{ 
+          background: 'linear-gradient(to top, #080705, transparent)' 
+        }} />
+        
+        {/* Animated decorative elements */}
+        <div className="absolute left-0 top-0 bottom-0 w-px animate-pulse-gold" style={{ 
+          background: 'linear-gradient(180deg, transparent, rgba(201,150,15,0.6) 30%, rgba(201,150,15,0.6) 70%, transparent)' 
+        }} />
+        
+        {/* Premium floating ring animation */}
+        <div className="absolute right-[8%] top-1/2 -translate-y-1/2 w-[480px] h-[480px] hidden xl:block pointer-events-none">
+          <motion.div 
+            className="animate-rotate-slow w-full h-full rounded-full border border-gold-500/20"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 1 }}
+          />
+          <motion.div 
+            className="absolute inset-12 rounded-full border border-gold-500/10"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 1.2 }}
+          />
+          <motion.div 
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1, delay: 2 }}
+          >
+            <div className="w-3 h-3 rounded-full bg-gold-500 animate-pulse-gold" />
+          </motion.div>
         </div>
 
-        <div className="container-law relative pt-28 pb-20 md:pt-36 md:pb-28">
-          <div className="max-w-3xl">
-            {/* Eyebrow */}
+        <div className="container-law relative pt-32 pb-24 md:pt-40 md:pb-32">
+          <div className="max-w-4xl">
+            {/* Enhanced eyebrow with animation */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="flex items-center gap-4 mb-6 md:mb-8"
+              transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+              className="flex items-center gap-5 mb-8 md:mb-10"
             >
-              <div className="w-8 h-px bg-gold-500" />
-              <span className="eyebrow">Established {FIRM.founded} · Mumbai, India</span>
+              <motion.div 
+                className="w-12 h-px bg-gradient-to-r from-gold-500 to-gold-300"
+                initial={{ width: 0 }}
+                animate={{ width: 48 }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+              />
+              <span className="eyebrow text-shadow-gold">Established {FIRM.founded} · Mumbai, India</span>
             </motion.div>
 
-            {/* Headline */}
+            {/* Premium headline with enhanced typography */}
             <motion.h1
-              initial={{ opacity: 0, y: 60 }}
+              initial={{ opacity: 0, y: 80 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="hero-title mb-6 md:mb-8"
+              transition={{ duration: 1.2, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+              className="hero-title mb-8 md:mb-10 text-shadow-soft"
             >
               Where Law<br />
               Meets{' '}
-              <em className="gold-text not-italic">Precision.</em>
+              <em className="gold-text not-italic text-shadow-gold">Precision.</em>
             </motion.h1>
 
-            {/* FIX: text-readability — raised opacity from 0.65 → 0.85 */}
+            {/* Enhanced subtitle */}
             <motion.p
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="text-base md:text-lg leading-relaxed max-w-xl mb-10 md:mb-12"
-              style={{ color: 'rgba(220,216,204,0.85)' }}
+              transition={{ duration: 1, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="subtitle-premium max-w-2xl mb-12 md:mb-16"
             >
               India's premier corporate law firm. Trusted by Fortune 500 companies, PE funds, and high-net-worth individuals for complex transactions, high-stakes litigation, and regulatory counsel.
             </motion.p>
 
-            {/* FIX: CTA hierarchy — ONE dominant primary, one ghost secondary */}
+            {/* Premium CTA buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+              transition={{ duration: 0.8, delay: 0.6, ease: [0.23, 1, 0.32, 1] }}
+              className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-16 md:mb-20"
             >
-              {/* PRIMARY — larger, more prominent */}
-              <Link to="/booking"
-                className="btn-gold group text-center"
-                style={{ padding: '16px 36px', fontSize: '12px', letterSpacing: '0.22em' }}
+              <PremiumButton 
+                to="/booking" 
+                size="lg" 
+                className="shadow-2xl"
               >
-                Book a Free Consultation
-                <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-              {/* SECONDARY — clearly subordinate */}
-              <Link to="/practice"
-                className="inline-flex items-center justify-center gap-2 text-[11px] tracking-[0.18em] uppercase font-medium transition-colors duration-300 py-4 px-6"
-                style={{ color: 'rgba(200,196,184,0.5)' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#c9960f')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(200,196,184,0.5)')}
+                Book Free Consultation
+              </PremiumButton>
+              
+              <PremiumButton 
+                href={`https://wa.me/${FIRM.whatsapp}`}
+                variant="outline" 
+                size="lg" 
+                icon="whatsapp"
               >
-                View Practice Areas <ArrowRight size={13} />
-              </Link>
+                WhatsApp Us Now
+              </PremiumButton>
             </motion.div>
 
-            {/* FIX: Trust signals in hero */}
+            {/* Enhanced trust signals with animated counters */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className="mt-14 md:mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-2xl"
+              transition={{ duration: 1.2, delay: 1 }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 max-w-4xl"
             >
-              {TRUST.map((s) => (
-                <div key={s.label} className="gold-line-left">
-                  <p className="font-serif text-2xl md:text-3xl font-light gold-text leading-none mb-1.5">{s.value}</p>
-                  <p className="text-[10px] tracking-[0.15em] uppercase leading-tight" style={{ color: 'rgba(200,196,184,0.45)' }}>{s.label}</p>
-                </div>
+              {TRUST.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.2 + (i * 0.1) }}
+                  className="gold-line-left group cursor-pointer"
+                >
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${stat.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className="text-white">
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <p className="font-serif text-3xl md:text-4xl font-light gold-text leading-none mb-2">
+                    <AnimatedCounter 
+                      end={stat.value} 
+                      prefix={stat.prefix} 
+                      suffix={stat.suffix}
+                      duration={2.5}
+                    />
+                  </p>
+                  <p className="text-[11px] tracking-[0.18em] uppercase leading-tight text-shadow-soft" 
+                     style={{ color: 'rgba(200,196,184,0.6)' }}>
+                    {stat.label}
+                  </p>
+                </motion.div>
               ))}
             </motion.div>
           </div>
         </div>
 
-        {/* Scroll hint */}
+        {/* Enhanced scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+          transition={{ delay: 2.5 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          <span className="text-[9px] tracking-[0.3em] uppercase" style={{ color: 'rgba(201,150,15,0.45)' }}>Scroll</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
-            <ChevronDown size={15} style={{ color: 'rgba(201,150,15,0.45)' }} />
+          <span className="text-[9px] tracking-[0.3em] uppercase text-gold-500/60">Scroll</span>
+          <motion.div 
+            animate={{ y: [0, 8, 0] }} 
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+          >
+            <ChevronDown size={16} className="text-gold-500/60" />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ══ TRUSTED BY — scrolling marquee ══ */}
-      <section className="relative overflow-hidden py-7" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.018)' }}>
-        <div className="absolute inset-y-0 left-0 w-20 z-10" style={{ background: 'linear-gradient(to right, #080705, transparent)' }} />
-        <div className="absolute inset-y-0 right-0 w-20 z-10" style={{ background: 'linear-gradient(to left, #080705, transparent)' }} />
-        <p className="text-center text-[9px] tracking-[0.35em] uppercase mb-5" style={{ color: 'rgba(200,196,184,0.25)' }}>
-          Trusted by India's Leading Corporations
-        </p>
+      {/* ══ PREMIUM TRUSTED BY SECTION ══ */}
+      <section className="relative overflow-hidden py-10 border-y border-white/5">
+        <div className="absolute inset-0 bg-premium-gold opacity-20" />
+        <div className="absolute inset-y-0 left-0 w-32 z-10" style={{ 
+          background: 'linear-gradient(to right, #080705, transparent)' 
+        }} />
+        <div className="absolute inset-y-0 right-0 w-32 z-10" style={{ 
+          background: 'linear-gradient(to left, #080705, transparent)' 
+        }} />
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-8"
+        >
+          <p className="text-[10px] tracking-[0.4em] uppercase mb-2" style={{ color: 'rgba(200,196,184,0.4)' }}>
+            Trusted by India's Leading Corporations
+          </p>
+          <div className="w-16 h-px mx-auto bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+        </motion.div>
+        
         <motion.div
           animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-          className="flex gap-14 whitespace-nowrap"
+          transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+          className="flex gap-16 whitespace-nowrap"
         >
           {[...TRUSTED, ...TRUSTED].map((name, i) => (
-            <span key={i} className="text-[10px] tracking-[0.28em] uppercase font-semibold" style={{ color: 'rgba(200,196,184,0.22)' }}>
+            <motion.span 
+              key={i} 
+              className="text-[11px] tracking-[0.3em] uppercase font-bold hover:text-gold-400 transition-colors duration-300 cursor-pointer" 
+              style={{ color: 'rgba(200,196,184,0.3)' }}
+              whileHover={{ scale: 1.05 }}
+            >
               {name}
-            </span>
+            </motion.span>
           ))}
         </motion.div>
       </section>
 
-      {/* ══ TRUST SIGNALS BAR ══ */}
-      <section className="py-12 md:py-16" style={{ background: 'rgba(201,150,15,0.03)', borderBottom: '1px solid rgba(201,150,15,0.08)' }}>
-        <div className="container-law">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {TRUST.map((t, i) => (
-              <FadeUp key={t.label} delay={i * 0.08}>
-                <div className="flex flex-col items-center text-center p-6 rounded-sm transition-all duration-300 hover:-translate-y-1"
-                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,150,15,0.1)' }}>
-                  <div className="mb-3" style={{ color: '#c9960f' }}>{t.icon}</div>
-                  <p className="font-serif text-3xl md:text-4xl font-light gold-text mb-1">{t.value}</p>
-                  <p className="text-[10px] tracking-[0.18em] uppercase" style={{ color: 'rgba(200,196,184,0.45)' }}>{t.label}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ══ TRUST BADGES COMPONENT ══ */}
+      <TrustBadges />
 
-      {/* ══ PRACTICE AREAS ══ */}
-      <section className="section-pad">
+      {/* ══ PREMIUM PRACTICE AREAS ══ */}
+      <section className="section-pad relative overflow-hidden">
+        <div className="absolute inset-0" style={{ 
+          background: 'radial-gradient(ellipse 50% 60% at 50% 0%, rgba(201,150,15,0.04) 0%, transparent 70%)' 
+        }} />
+        
         <div className="container-law">
           <FadeUp>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
-              <div>
-                <p className="eyebrow mb-3">What We Do</p>
-                <h2 className="section-title">Practice <em className="gold-text not-italic">Expertise</em></h2>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 md:mb-20">
+              <div className="max-w-2xl">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: 64 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                  className="h-px bg-gradient-to-r from-gold-500 to-gold-300 mb-4"
+                />
+                <p className="eyebrow mb-4">What We Do</p>
+                <h2 className="section-title mb-6">Practice <em className="gold-text not-italic">Expertise</em></h2>
+                <div className="w-24 h-px bg-gradient-to-r from-gold-500 via-gold-400 to-transparent mb-6" />
               </div>
-              <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'rgba(200,196,184,0.5)' }}>
-                Six decades of combined experience across the most complex areas of Indian and international law.
-              </p>
+              <div className="max-w-md">
+                <p className="text-base leading-relaxed text-shadow-soft" style={{ color: 'rgba(200,196,184,0.7)' }}>
+                  Six decades of combined experience across the most complex areas of Indian and international law.
+                </p>
+              </div>
             </div>
           </FadeUp>
 
-          <div className="grid gap-px grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ background: 'rgba(255,255,255,0.04)' }}>
+          <StaggerContainer className="grid gap-1 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 rounded-sm overflow-hidden" 
+                           style={{ background: 'rgba(255,255,255,0.02)' }}>
             {PRACTICE_AREAS.map((area, i) => (
-              <motion.div
-                key={area.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.07 }}
-                className="group relative p-8 md:p-10 cursor-pointer overflow-hidden"
-                style={{ background: '#080705' }}
-              >
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: 'linear-gradient(135deg, rgba(201,150,15,0.07) 0%, rgba(255,255,255,0.01) 100%)' }} />
-                <div className="absolute top-0 inset-x-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-                  style={{ background: 'linear-gradient(90deg, #c9960f, #e6b830)' }} />
-                <div className="relative">
-                  <span className="text-3xl mb-5 block">{area.icon}</span>
-                  <h3 className="font-serif text-xl text-white mb-3 group-hover:text-gold-400 transition-colors duration-300">{area.title}</h3>
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(200,196,184,0.5)' }}>{area.short}</p>
-                  <div className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-gold-500 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                    Learn More <ArrowRight size={11} />
+              <StaggerItem key={area.id}>
+                <motion.div
+                  className="group relative p-10 md:p-12 cursor-pointer overflow-hidden h-full"
+                  style={{ background: '#080705' }}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {/* Hover background effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    style={{ background: 'linear-gradient(135deg, rgba(201,150,15,0.1) 0%, rgba(255,255,255,0.02) 100%)' }} />
+                  
+                  {/* Top border animation */}
+                  <div className="absolute top-0 inset-x-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"
+                    style={{ background: 'linear-gradient(90deg, #c9960f, #e6b830)' }} />
+                  
+                  {/* Side accent */}
+                  <div className="absolute left-0 top-0 bottom-0 w-px opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    style={{ background: 'linear-gradient(180deg, transparent, #c9960f 30%, #c9960f 70%, transparent)' }} />
+                  
+                  <div className="relative z-10">
+                    <motion.span 
+                      className="text-4xl mb-6 block"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {area.icon}
+                    </motion.span>
+                    
+                    <h3 className="font-serif text-xl md:text-2xl text-white mb-4 group-hover:text-gold-400 transition-colors duration-500 text-shadow-soft">
+                      {area.title}
+                    </h3>
+                    
+                    <p className="text-sm md:text-base leading-relaxed mb-6 text-shadow-soft" 
+                       style={{ color: 'rgba(200,196,184,0.7)' }}>
+                      {area.short}
+                    </p>
+                    
+                    <motion.div 
+                      className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-gold-500 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500"
+                      whileHover={{ x: 4 }}
+                    >
+                      <span className="font-bold">Learn More</span>
+                      <ArrowRight size={12} />
+                    </motion.div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
-          <FadeUp delay={0.2} className="text-center mt-10">
-            <Link to="/practice" className="btn-outline">View All Practice Areas</Link>
+          <FadeUp delay={0.3} className="text-center mt-12">
+            <PremiumButton to="/practice" variant="outline" size="lg">
+              View All Practice Areas
+            </PremiumButton>
           </FadeUp>
         </div>
       </section>
@@ -422,35 +565,113 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ FINAL CTA ══ */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(201,150,15,0.09) 0%, rgba(8,7,5,0) 50%, rgba(201,150,15,0.06) 100%)' }} />
-        <div className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,150,15,0.45), transparent)' }} />
-        <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,150,15,0.45), transparent)' }} />
-        <div className="container-law relative text-center max-w-3xl">
+      {/* ══ PREMIUM FINAL CTA ══ */}
+      <section className="relative py-32 md:py-40 overflow-hidden">
+        {/* Premium background layers */}
+        <div className="absolute inset-0" style={{ 
+          background: 'linear-gradient(135deg, rgba(201,150,15,0.12) 0%, rgba(8,7,5,0.8) 40%, rgba(201,150,15,0.08) 100%)' 
+        }} />
+        <div className="absolute inset-0" style={{ 
+          background: 'radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,150,15,0.06) 0%, transparent 70%)' 
+        }} />
+        
+        {/* Animated border lines */}
+        <motion.div 
+          className="absolute inset-x-0 top-0 h-px"
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 2 }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(201,150,15,0.6), transparent)' }} 
+        />
+        <motion.div 
+          className="absolute inset-x-0 bottom-0 h-px"
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 2, delay: 0.2 }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(201,150,15,0.6), transparent)' }} 
+        />
+        
+        {/* Floating decorative elements */}
+        <div className="absolute top-20 left-10 w-2 h-2 rounded-full bg-gold-500/30 animate-float" />
+        <div className="absolute bottom-20 right-10 w-3 h-3 rounded-full bg-gold-500/20 animate-float-slow" />
+        <div className="absolute top-1/2 left-20 w-1 h-1 rounded-full bg-gold-500/40 animate-pulse-gold" />
+        
+        <div className="container-law relative text-center max-w-4xl">
           <FadeUp>
-            <p className="eyebrow mb-5">Take the First Step</p>
-            <h2 className="section-title mb-5">
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: 80 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5 }}
+              className="h-px bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mb-6"
+            />
+            
+            <p className="eyebrow mb-6 text-shadow-gold">Take the First Step</p>
+            
+            <h2 className="section-title mb-8 text-shadow-soft">
               Your matter deserves{' '}
-              <em className="gold-text not-italic">senior attention.</em>
+              <em className="gold-text not-italic text-shadow-gold">senior attention.</em>
             </h2>
-            <div className="divider-gold-center" />
-            <p className="text-sm leading-relaxed mb-10 max-w-xl mx-auto" style={{ color: 'rgba(200,196,184,0.6)' }}>
+            
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: 120 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, delay: 0.3 }}
+              className="h-px bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mb-8"
+            />
+            
+            <p className="text-base md:text-lg leading-relaxed mb-12 max-w-2xl mx-auto subtitle-premium">
               Every consultation is handled personally by a senior partner. Confidential. No obligation. No junior associates.
             </p>
-            {/* Single dominant CTA */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/booking" className="btn-gold group" style={{ padding: '16px 40px', fontSize: '12px' }}>
-                Book a Free Consultation
-                <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-              <a href={`https://wa.me/${FIRM.whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-outline">
+            
+            {/* Premium CTA buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-6 mb-8">
+              <PremiumButton 
+                to="/booking" 
+                size="lg"
+                className="shadow-2xl hover-lift"
+              >
+                Book Free Consultation
+              </PremiumButton>
+              
+              <PremiumButton 
+                href={`https://wa.me/${FIRM.whatsapp}`}
+                variant="outline" 
+                size="lg" 
+                icon="whatsapp"
+                className="backdrop-blur-premium"
+              >
                 WhatsApp Us Now
-              </a>
+              </PremiumButton>
             </div>
-            <p className="text-xs mt-6" style={{ color: 'rgba(200,196,184,0.3)' }}>
-              No fees for the initial consultation · Strictly confidential
-            </p>
+            
+            {/* Trust indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-6 text-xs"
+              style={{ color: 'rgba(200,196,184,0.5)' }}
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle size={14} className="text-gold-500" />
+                <span>No fees for initial consultation</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-white/20" />
+              <div className="flex items-center gap-2">
+                <Shield size={14} className="text-gold-500" />
+                <span>Strictly confidential</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-white/20" />
+              <div className="flex items-center gap-2">
+                <Award size={14} className="text-gold-500" />
+                <span>Senior partner guarantee</span>
+              </div>
+            </motion.div>
           </FadeUp>
         </div>
       </section>
